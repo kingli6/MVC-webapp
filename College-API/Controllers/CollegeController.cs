@@ -1,31 +1,50 @@
+using College_API.Data;
+using College_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace College_API.Controllers
 {
     [Route("api/v1/course")]   //should I name it education?
     public class CollegeController : Controller
     {
+        private readonly CourseContext _context;
+        public CollegeController(CourseContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet()]
         //api/v1/course
-        public ActionResult ListGetCourse(){
-            return StatusCode(200, "{'message': 'List of courses, currently empty'}");
+        public async Task<ActionResult<List<Course>>> ListGetCourse()
+        {
+            var response = await _context.Courses.ToListAsync();
+            return Ok(response);
         }
+
         [HttpGet("{id}")]
         //api/v1/course/id
-        public ActionResult GetCourseById(int id){
+        public ActionResult GetCourseById(int id)
+        {
             return Ok("{'message': 'Courses by id, empty atm'}");
         }
         [HttpPost()]
-        public ActionResult AddCourse(){
-            return StatusCode(201, "{'message': 'save new course to database. not available atm'}");
+        public async Task<ActionResult<Course>> AddCourse(Course course)
+        {
+            await _context.Courses.AddAsync(course);
+            await _context.SaveChangesAsync();
+            return StatusCode(201, course);
         }
         // Updates an existing item//204. Don't return Ok 
         [HttpPut("{id}")]
-        public ActionResult UpdateCourse(int id){
-            return NoContent(); 
+        public ActionResult UpdateCourse(int id)
+        {
+            return NoContent();
         }
         [HttpDelete("{id}")]
-        public ActionResult DeleteCourse(int id){
+        public ActionResult DeleteCourse(int id)
+        {
             return /*204*/NoContent();
         }
     }
