@@ -1,8 +1,7 @@
-namespace College_API.Models
+namespace College_API.ViewModels
 {
-    public class Course
+    public class PostCourseViewModel
     {
-        public int Id { get; set; }
         public string? Name { get; set; }
         public int CourseNumber { get; set; }
         public float Duration { get; set; }
