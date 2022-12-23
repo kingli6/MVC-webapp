@@ -25,9 +25,18 @@ namespace College_API.Controllers
 
         [HttpGet("{id}")]
         //api/v1/course/id
-        public ActionResult GetCourseById(int id)
+        public async Task<ActionResult<Course>> GetCourseById(int id)
         {
-            return Ok("{'message': 'Courses by id, empty atm'}");
+            var response = await _context.Courses.FindAsync(id);
+            if (response is null) return NotFound($"CourseID: {id} not found...");
+            return Ok(response);
+        }
+        [HttpGet("coursenumber/{number}")]
+        public async Task<ActionResult<Course>> GetCourseByCourseNumber(int number)
+        {
+            var response = await _context.Courses.SingleOrDefaultAsync(c => c.CourseNumber == number);
+            if (response is null) return NotFound($"CourseNr: {number} not found...");
+            return Ok(response);
         }
         [HttpPost()]
         public async Task<ActionResult<Course>> AddCourse(Course course)
@@ -38,14 +47,28 @@ namespace College_API.Controllers
         }
         // Updates an existing item//204. Don't return Ok 
         [HttpPut("{id}")]
-        public ActionResult UpdateCourse(int id)
+        public async Task<ActionResult<Course>> UpdateCourse(int id, Course model)
         {
-            return NoContent();
+            var response = await _context.Courses.FindAsync(id);
+            if (response is null) return NotFound($"CourseID: {id} not found...");
+            response.Name = model.Name;
+            response.CourseNumber = model.CourseNumber;
+            response.Duration = model.Duration;
+            response.Detail = model.Detail;
+
+            _context.Courses.Update(response);
+            await _context.SaveChangesAsync();
+            return Ok(response);
         }
         [HttpDelete("{id}")]
-        public ActionResult DeleteCourse(int id)
+        public async Task<ActionResult> DeleteCourse(int id)
         {
-            return /*204*/NoContent();
+            var response = await _context.Courses.FindAsync(id);
+            if (response is null) return NotFound($"CourseID: {id} not found...");
+            _context.Courses.Remove(response);
+            await _context.SaveChangesAsync();
+
+            return NoContent();/*204*/
         }
     }
 }
