@@ -58,7 +58,7 @@ namespace College_API.Controllers
         [HttpGet("coursenumber/{number}")]
         public async Task<ActionResult<Course>> GetCourseByCourseNumber(int number)
         {
-            var response = await _context.Courses.SingleOrDefaultAsync(c => c.CourseNumber == number);
+            var response = await _courseRepo.GetCourseByCourseNumAsync(number);
             if (response is null) return NotFound($"CourseNr: {number} not found...");
             return Ok(response);
         }

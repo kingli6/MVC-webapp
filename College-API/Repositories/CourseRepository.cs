@@ -36,9 +36,15 @@ namespace College_API.Repositories
             }).SingleOrDefaultAsync();
         }
 
-        public Task<Course> GetCourseByCourseNumAsync(string courseNumber)
+        public async Task<CourseViewModel?> GetCourseByCourseNumAsync(int courseNumber)
         {
-            throw new NotImplementedException();
+            return await _context.Courses.Where(c => c.CourseNumber == courseNumber)
+            .Select(course => new CourseViewModel
+            {
+                CourseId = course.Id,
+                CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
+                DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
+            }).SingleOrDefaultAsync();
         }
 
         public async Task<List<Course>> ListAllCourseAsync()
