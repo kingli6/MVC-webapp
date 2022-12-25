@@ -22,7 +22,7 @@ namespace College_API.Controllers
 
         [HttpGet()]
         //api/v1/course
-        public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()
+        public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()//How do I make changes everywhere?
         {
             // var response = await _context.Courses.ToListAsync();
             var response = await _courseRepo.ListAllCourseAsync();
@@ -46,14 +46,16 @@ namespace College_API.Controllers
         //api/v1/course/id
         public async Task<ActionResult<Course>> GetCourseById(int id)
         {
-            var response = await _context.Courses.FindAsync(id);
+            // var response = await _context.Courses.FindAsync(id);
+            var response = await _courseRepo.GetCourseByIdAsync(id);
+            if (response is null) return NotFound($"CourseID: {id} not found...");
+
             var course = new CourseViewModel
             {
                 CourseId = response!.Id,
                 CourseNameNumber = ($"{response.CourseNumber} {response.Name}"),
                 DurationDetail = string.Concat(response.Duration, "hrs ", response.Detail)
             };
-            if (response is null) return NotFound($"CourseID: {id} not found...");
             return Ok(response);
         }
 

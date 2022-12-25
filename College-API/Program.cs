@@ -1,4 +1,6 @@
 using College_API.Data;
+using College_API.Interfaces;
+using College_API.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +13,7 @@ builder.Services.AddDbContext<CourseContext>(options =>
 );
 
 // Dependency injection for our own interface and classes.
-builder.Services.
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
 
 builder.Services.AddControllers();

@@ -19,17 +19,17 @@ namespace College_API.Repositories
             throw new NotImplementedException();
         }
 
-        public void DeleteVehicle(int id)
+        public void DeleteCourse(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Course> GetCourseAsync(int id)
+        public async Task<Course?> GetCourseByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Courses.SingleOrDefaultAsync(c => c.Id == id);
         }
 
-        public Task<Course> GetCourseAsync(string courseNumber)
+        public Task<Course> GetCourseByCourseNumAsync(string courseNumber)
         {
             throw new NotImplementedException();
         }
@@ -37,6 +37,7 @@ namespace College_API.Repositories
         public async Task<List<Course>> ListAllCourseAsync()
         {
             var response = await _context.Courses.ToListAsync();
+            return response;
         }
 
         public Task<bool> SaveAllAsync()
