@@ -1,3 +1,4 @@
+using AutoMapper;
 using College_API.Data;
 using College_API.Interfaces;
 using College_API.Models;
@@ -13,11 +14,13 @@ namespace College_API.Controllers
     {
         private readonly CourseContext _context;
         private readonly ICourseRepository _courseRepo;
+        private readonly IMapper _mapper;
 
-        public CollegeController(CourseContext context, ICourseRepository courseRepo)
+        public CollegeController(CourseContext context, ICourseRepository courseRepo, IMapper mapper)
         {
             _context = context;
             _courseRepo = courseRepo;
+            _mapper = mapper;
         }
 
 
@@ -99,15 +102,32 @@ namespace College_API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
-            var response = await _context.Courses.FindAsync(id);
-            if (response is null) return NotFound($"CourseID: {id} not found...");
-            _context.Courses.Remove(response);
-            await _context.SaveChangesAsync();
+            _courseRepo.DeleteCourse(id);   //why is there no need for async/ await?
 
-            return NoContent();/*204*/
+            if (await _courseRepo.SaveAllAsync()) return NoContent();
+
+            return StatusCode(500, "Couldn't delete the item. Something went wrong.");/*204*/
         }
     }
 }
+
+//OLD CODE
+/*
+[HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteCourse(int id)
+        {
+            var response = await _context.Courses.FindAsync(id);
+            if (response is null) return NotFound($"CourseID: {id} not found...");
+            _context.Courses.Remove(response);
+
+
+            return NoContent();//204
+        }
+
+
+
+*/
+
 
 //Trash
 /*
@@ -115,26 +135,4 @@ namespace College_API.Controllers
     -return BadRequest(); NotFound();    return StatusCode(200, "{'mess': 'something'}"    
     -NoContent() is StatusCode 204
     -Status Code 201? is in AddCourse
-*/
-/*
-OLD CODE
-
-private readonly ILogger<CollegeController> _logger;
-
-        public CollegeController(ILogger<CollegeController> logger)
-        {
-            _logger = logger;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View("Error!");
-        }
-
 */

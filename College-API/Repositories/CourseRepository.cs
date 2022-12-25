@@ -20,9 +20,10 @@ namespace College_API.Repositories
             throw new NotImplementedException();
         }
 
-        public void DeleteCourse(int id)
+        public void DeleteCourse(int id) //why is there no need for async/ await?  A. Because Remove doesn't have a async in dbcontext...
         {
-            throw new NotImplementedException();
+            var response = _context.Courses.Find(id);
+            if (response is not null) _context.Courses.Remove(response);
         }
 
         public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
@@ -53,9 +54,9 @@ namespace College_API.Repositories
             return response;
         }
 
-        public Task<bool> SaveAllAsync()
+        public async Task<bool> SaveAllAsync()
         {
-            throw new NotImplementedException();
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public void UpdateCourse(int id, Course model)
