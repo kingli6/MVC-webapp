@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace College_API.Controllers
 {
+    [ApiController]
     [Route("api/v1/course")]   //should I name it education?
     public class CollegeController : Controller
     {
@@ -50,12 +51,6 @@ namespace College_API.Controllers
             var response = await _courseRepo.GetCourseByIdAsync(id);
             if (response is null) return NotFound($"CourseID: {id} not found...");
 
-            var course = new CourseViewModel
-            {
-                CourseId = response!.Id,
-                CourseNameNumber = ($"{response.CourseNumber} {response.Name}"),
-                DurationDetail = string.Concat(response.Duration, "hrs ", response.Detail)
-            };
             return Ok(response);
         }
 

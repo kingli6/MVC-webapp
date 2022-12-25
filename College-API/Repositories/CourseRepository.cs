@@ -1,6 +1,7 @@
 using College_API.Data;
 using College_API.Interfaces;
 using College_API.Models;
+using College_API.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace College_API.Repositories
@@ -24,9 +25,15 @@ namespace College_API.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<Course?> GetCourseByIdAsync(int id)
+        public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
         {
-            return await _context.Courses.SingleOrDefaultAsync(c => c.Id == id);
+            return await _context.Courses.Where(c => c.Id == id)
+            .Select(course => new CourseViewModel
+            {
+                CourseId = course.Id,
+                CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
+                DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
+            }).SingleOrDefaultAsync();
         }
 
         public Task<Course> GetCourseByCourseNumAsync(string courseNumber)
