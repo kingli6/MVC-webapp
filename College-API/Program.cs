@@ -10,6 +10,10 @@ builder.Services.AddDbContext<CourseContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"))
 );
 
+// Dependency injection for our own interface and classes.
+builder.Services.
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

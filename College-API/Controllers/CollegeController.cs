@@ -1,7 +1,7 @@
 using College_API.Data;
+using College_API.Interfaces;
 using College_API.Models;
 using College_API.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +11,12 @@ namespace College_API.Controllers
     public class CollegeController : Controller
     {
         private readonly CourseContext _context;
-        public CollegeController(CourseContext context)
+        private readonly ICourseRepository _courseRepo;
+
+        public CollegeController(CourseContext context, ICourseRepository courseRepo)
         {
             _context = context;
+            _courseRepo = courseRepo;
         }
 
 
@@ -21,7 +24,8 @@ namespace College_API.Controllers
         //api/v1/course
         public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()
         {
-            var response = await _context.Courses.ToListAsync();
+            // var response = await _context.Courses.ToListAsync();
+            var response = await _courseRepo.ListAllCourseAsync();
             var courseList = new List<CourseViewModel>();
             foreach (var course in response)
             {
