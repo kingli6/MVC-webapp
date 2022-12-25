@@ -16,6 +16,7 @@ namespace College_API.Controllers
             _context = context;
         }
 
+
         [HttpGet()]
         //api/v1/course
         public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()
@@ -36,14 +37,23 @@ namespace College_API.Controllers
             return Ok(courseList);
         }
 
+
         [HttpGet("{id}")]
         //api/v1/course/id
         public async Task<ActionResult<Course>> GetCourseById(int id)
         {
             var response = await _context.Courses.FindAsync(id);
+            var course = new CourseViewModel
+            {
+                CourseId = response!.Id,
+                CourseNameNumber = ($"{response.CourseNumber} {response.Name}"),
+                DurationDetail = string.Concat(response.Duration, "hrs ", response.Detail)
+            };
             if (response is null) return NotFound($"CourseID: {id} not found...");
             return Ok(response);
         }
+
+
         [HttpGet("coursenumber/{number}")]
         public async Task<ActionResult<Course>> GetCourseByCourseNumber(int number)
         {
@@ -51,6 +61,8 @@ namespace College_API.Controllers
             if (response is null) return NotFound($"CourseNr: {number} not found...");
             return Ok(response);
         }
+
+
         [HttpPost()]
         public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)
         {
@@ -65,8 +77,9 @@ namespace College_API.Controllers
             await _context.SaveChangesAsync();
             return StatusCode(201, course);
         }
-        // Updates an existing item//204. Don't return Ok 
-        [HttpPut("{id}")]
+
+
+        [HttpPut("{id}")]   //THIS DOESN^T WORK
         public async Task<ActionResult<Course>> UpdateCourse(int id, Course model)
         {
             var response = await _context.Courses.FindAsync(id);
@@ -80,6 +93,8 @@ namespace College_API.Controllers
             await _context.SaveChangesAsync();
             return Ok(response);
         }
+
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
