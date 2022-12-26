@@ -6,10 +6,10 @@ namespace College_API.Helpers
 {
     public class AutoMapperProfiles : Profile
     {
-        protected AutoMapperProfiles()
+        public AutoMapperProfiles()
         {
             // Map från -> till
-            CreateMap<PostCourseViewModel, Course>();
+            CreateMap<PostCourseViewModel, Course>();   // for post function?
             CreateMap<Course, CourseViewModel>();
         }
     }

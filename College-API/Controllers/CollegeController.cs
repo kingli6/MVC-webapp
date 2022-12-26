@@ -70,16 +70,19 @@ namespace College_API.Controllers
         [HttpPost()]
         public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)
         {
-            var courseToAdd = new Course
-            {
-                Name = course.Name,
-                CourseNumber = course.CourseNumber,
-                Duration = course.Duration,
-                Detail = course.Detail
-            };
+            // var courseToAdd = new Course
+            // {
+            //     Name = course.Name,
+            //     CourseNumber = course.CourseNumber,
+            //     Duration = course.Duration,
+            //     Detail = course.Detail
+            // };
+            // from -> to
+            var courseToAdd = _mapper.Map<Course>(course);
             await _context.Courses.AddAsync(courseToAdd);
+
             await _context.SaveChangesAsync();
-            return StatusCode(201, course);
+            return StatusCode(201, courseToAdd);
         }
 
 
@@ -113,6 +116,23 @@ namespace College_API.Controllers
 
 //OLD CODE
 /*
+
+[HttpPost()] //Adding automapper, so I removed this.
+        public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)
+        {
+            var courseToAdd = new Course
+            {
+                Name = course.Name,
+                CourseNumber = course.CourseNumber,
+                Duration = course.Duration,
+                Detail = course.Detail
+            };
+            await _context.Courses.AddAsync(courseToAdd);
+            await _context.SaveChangesAsync();
+            return StatusCode(201, course);
+        }
+
+
 [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
@@ -123,9 +143,6 @@ namespace College_API.Controllers
 
             return NoContent();//204
         }
-
-
-
 */
 
 
