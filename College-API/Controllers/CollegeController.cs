@@ -26,22 +26,10 @@ namespace College_API.Controllers
 
         [HttpGet()]
         //api/v1/course
-        public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()//How do I make changes everywhere?
+        public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()//How do I make changes everywhere? VSCODE command...
         {
-            // var response = await _context.Courses.ToListAsync();
             var response = await _courseRepo.ListAllCourseAsync();
-            var courseList = new List<CourseViewModel>();
-            foreach (var course in response)
-            {
-                courseList.Add(
-                    new CourseViewModel
-                    {
-                        CourseId = course.Id,
-                        CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
-                        DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
-                    }
-                );
-            }
+            var courseList = _mapper.Map<List<CourseViewModel>>(response);
             return Ok(courseList);
         }
 
@@ -116,6 +104,30 @@ namespace College_API.Controllers
 
 //OLD CODE
 /*
+
+
+
+[HttpGet()]
+        //api/v1/course
+        public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()//How do I make changes everywhere?
+        {
+            // var response = await _context.Courses.ToListAsync();
+            var response = await _courseRepo.ListAllCourseAsync();
+            var courseList = new List<CourseViewModel>();
+            foreach (var course in response)
+            {
+                courseList.Add(
+                    new CourseViewModel
+                    {
+                        CourseId = course.Id,
+                        CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
+                        DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
+                    }
+                );
+            }
+            return Ok(courseList);
+        }
+
 
 [HttpPost()] //Adding automapper, so I removed this.
         public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)

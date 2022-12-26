@@ -9,8 +9,16 @@ namespace College_API.Helpers
         public AutoMapperProfiles()
         {
             // Map från -> till
-            CreateMap<PostCourseViewModel, Course>();   // for post function?
-            CreateMap<Course, CourseViewModel>();
+            CreateMap<PostCourseViewModel, Course>();   // Q. for post function? A.Yes
+
+            CreateMap<Course, CourseViewModel>()
+            .ForMember(dest => dest.CourseId, options => options.
+            MapFrom(src => src.Id))
+            .ForMember(dest => dest.CourseNameNumber, options => options.
+            MapFrom(dest => string.Concat(dest.CourseNumber, " ", dest.Name)))
+            .ForMember(src => src.DurationDetail, options => options.
+            MapFrom(dest => string.Concat(dest.Duration, "hrs \n", dest.Detail)));
+
         }
     }
 }

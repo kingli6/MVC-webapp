@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using College_API.Data;
 using College_API.Interfaces;
 using College_API.Models;
@@ -9,10 +11,12 @@ namespace College_API.Repositories
     public class CourseRepository : ICourseRepository
     {
         private readonly CourseContext _context;
+        private readonly IMapper _mapper;
 
-        public CourseRepository(CourseContext context)
+        public CourseRepository(CourseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public Task AddCourseAsync(Course model)
@@ -29,12 +33,7 @@ namespace College_API.Repositories
         public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
         {
             return await _context.Courses.Where(c => c.Id == id)
-            .Select(course => new CourseViewModel
-            {
-                CourseId = course.Id,
-                CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
-                DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
-            }).SingleOrDefaultAsync();
+            .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
         }
 
         public async Task<CourseViewModel?> GetCourseByCourseNumAsync(int courseNumber)
@@ -65,3 +64,20 @@ namespace College_API.Repositories
         }
     }
 }
+
+//Old code
+/*
+
+
+
+public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
+        {
+            return await _context.Courses.Where(c => c.Id == id)
+            .Select(course => new CourseViewModel
+            {
+                CourseId = course.Id,
+                CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
+                DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
+            }).SingleOrDefaultAsync();
+        }
+*/
