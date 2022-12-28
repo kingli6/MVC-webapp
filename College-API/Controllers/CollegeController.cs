@@ -12,13 +12,11 @@ namespace College_API.Controllers
     [Route("api/v1/course")]   //should I name it education?
     public class CollegeController : Controller
     {
-        private readonly CourseContext _context;
         private readonly ICourseRepository _courseRepo;
         private readonly IMapper _mapper;
 
-        public CollegeController(CourseContext context, ICourseRepository courseRepo, IMapper mapper)
+        public CollegeController(ICourseRepository courseRepo, IMapper mapper)
         {
-            _context = context;
             _courseRepo = courseRepo;
             _mapper = mapper;
         }
