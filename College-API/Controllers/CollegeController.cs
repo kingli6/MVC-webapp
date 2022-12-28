@@ -30,7 +30,6 @@ namespace College_API.Controllers
             return Ok(courseList);
         }
 
-
         [HttpGet("{id}")]
         //api/v1/course/id
         public async Task<ActionResult<Course>> GetCourseById(int id)
@@ -42,7 +41,6 @@ namespace College_API.Controllers
             return Ok(response);
         }
 
-
         [HttpGet("coursenumber/{number}")]
         public async Task<ActionResult<Course>> GetCourseByCourseNumber(int number)
         {
@@ -51,6 +49,11 @@ namespace College_API.Controllers
             return Ok(response);
         }
 
+        [HttpGet("coursename/{name}")]
+        public async Task<ActionResult<List<CourseViewModel>>> GetCourseByName(string name)
+        {
+            return Ok(await _courseRepo.GetCourseByNameAsync(name));
+        }
 
         [HttpPost()]
         public async Task<ActionResult> AddCourse(PostCourseViewModel model)
@@ -71,7 +74,7 @@ namespace College_API.Controllers
         {
             try
             {
-                await _courseRepo.UpdateCourse(id, model);
+                await _courseRepo.UpdateCourseAsync(id, model);
                 if (await _courseRepo.SaveAllAsync()) return NoContent();
 
                 return StatusCode(500, "An error has occured when trying to update the course.");
@@ -84,10 +87,27 @@ namespace College_API.Controllers
         }
 
 
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateCourse(int id, PatchCourseViewModelDetail model)
+        {
+            try
+            {
+                await _courseRepo.UpdateCourseAsync(id, model);
+                if (await _courseRepo.SaveAllAsync()) return NoContent();
+
+                return StatusCode(500, "An error has occured when trying to update the course.");
+            }
+            //here we need to return soemthing, since not all code paths return a...
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
-            await _courseRepo.DeleteCourse(id);   //why is there no need for async/ await?
+            await _courseRepo.DeleteCourseAsync(id);   //why is there no need for async/ await?
 
             if (await _courseRepo.SaveAllAsync()) return NoContent();
 

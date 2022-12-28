@@ -6,11 +6,13 @@ namespace College_API.Interfaces
     public interface ICourseRepository
     {
         public Task<List<CourseViewModel>> ListAllCourseAsync();
+        public Task<List<CourseViewModel>> GetCourseByNameAsync(string name);
         public Task<CourseViewModel?> GetCourseByIdAsync(int id);
         public Task<CourseViewModel?> GetCourseByCourseNumAsync(int courseNumber);
         public Task AddCourseAsync(PostCourseViewModel model);
-        public Task DeleteCourse(int id);
-        public Task UpdateCourse(int id, PostCourseViewModel model);
+        public Task DeleteCourseAsync(int id);
+        public Task UpdateCourseAsync(int id, PostCourseViewModel model);
+        public Task UpdateCourseAsync(int id, PatchCourseViewModelDetail model);
         public Task<bool> SaveAllAsync();
 
     }

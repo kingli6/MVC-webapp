@@ -18,24 +18,27 @@ namespace College_API.Repositories
             _context = context;
             _mapper = mapper;
         }
-
+        public async Task DeleteCourseAsync(int id) //why is there no need for async/ await?  A. Because Remove doesn't have a async in dbcontext...
+        {
+            var response = await _context.Courses.FindAsync(id);
+            if (response is not null) _context.Courses.Remove(response);
+        }
+        public async Task<bool> SaveAllAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
         public async Task<List<CourseViewModel>> ListAllCourseAsync()
         {
             return await _context.Courses.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
-        public async Task AddCourseAsync(PostCourseViewModel model)
+        public async Task<List<CourseViewModel>> GetCourseByNameAsync(string name)
         {
-            var courseToAdd = _mapper.Map<Course>(model);
-            await _context.Courses.AddAsync(courseToAdd);
+            return await _context.Courses
+            .Where(c => c.Name!.ToLower() == name.ToLower())
+            .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
+            .ToListAsync();
         }
-
-        public async Task DeleteCourse(int id) //why is there no need for async/ await?  A. Because Remove doesn't have a async in dbcontext...
-        {
-            var response = await _context.Courses.FindAsync(id);
-            if (response is not null) _context.Courses.Remove(response);
-        }
-
         public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
         {
             return await _context.Courses.Where(c => c.Id == id)
@@ -49,13 +52,12 @@ namespace College_API.Repositories
         }
 
 
-
-        public async Task<bool> SaveAllAsync()
+        public async Task AddCourseAsync(PostCourseViewModel model)
         {
-            return await _context.SaveChangesAsync() > 0;
+            var courseToAdd = _mapper.Map<Course>(model);
+            await _context.Courses.AddAsync(courseToAdd);
         }
-
-        public async Task UpdateCourse(int id, PostCourseViewModel model)
+        public async Task UpdateCourseAsync(int id, PostCourseViewModel model)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course is null)
@@ -64,6 +66,16 @@ namespace College_API.Repositories
             course.CourseNumber = model.CourseNumber;
             course.Name = model.Name;
             course.Duration = model.Duration;
+            course.Detail = model.Detail;
+            _context.Courses.Update(course);
+
+        }
+        public async Task UpdateCourseAsync(int id, PatchCourseViewModelDetail model)
+        {
+            var course = await _context.Courses.FindAsync(id);
+            if (course is null)
+                throw new Exception($"We couldn't add the requested Course with id: {id}");
+
             course.Detail = model.Detail;
             _context.Courses.Update(course);
 
