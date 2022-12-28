@@ -9,8 +9,8 @@ namespace College_API.Interfaces
         public Task<CourseViewModel?> GetCourseByIdAsync(int id);
         public Task<CourseViewModel?> GetCourseByCourseNumAsync(int courseNumber);
         public Task AddCourseAsync(PostCourseViewModel model);
-        public void DeleteCourse(int id);
-        public void UpdateCourse(int id, Course model);
+        public Task DeleteCourse(int id);
+        public Task UpdateCourse(int id, PostCourseViewModel model);
         public Task<bool> SaveAllAsync();
 
     }

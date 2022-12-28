@@ -30,9 +30,9 @@ namespace College_API.Repositories
             await _context.Courses.AddAsync(courseToAdd);
         }
 
-        public void DeleteCourse(int id) //why is there no need for async/ await?  A. Because Remove doesn't have a async in dbcontext...
+        public async Task DeleteCourse(int id) //why is there no need for async/ await?  A. Because Remove doesn't have a async in dbcontext...
         {
-            var response = _context.Courses.Find(id);
+            var response = await _context.Courses.FindAsync(id);
             if (response is not null) _context.Courses.Remove(response);
         }
 
@@ -55,9 +55,18 @@ namespace College_API.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public void UpdateCourse(int id, Course model)
+        public async Task UpdateCourse(int id, PostCourseViewModel model)
         {
-            throw new NotImplementedException();
+            var course = await _context.Courses.FindAsync(id);
+            if (course is null)
+                throw new Exception($"We couldn't add the requested Course with id: {id}");
+
+            course.CourseNumber = model.CourseNumber;
+            course.Name = model.Name;
+            course.Duration = model.Duration;
+            course.Detail = model.Detail;
+            _context.Courses.Update(course);
+
         }
     }
 }

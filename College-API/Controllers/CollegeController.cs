@@ -69,25 +69,27 @@ namespace College_API.Controllers
 
 
         [HttpPut("{id}")]   //THIS DOESN^T WORK 
-        public async Task<ActionResult<Course>> UpdateCourse(int id, Course model)
+        public async Task<ActionResult<Course>> UpdateCourse(int id, PostCourseViewModel model)
         {
-            var response = await _context.Courses.FindAsync(id);
-            if (response is null) return NotFound($"CourseID: {id} not found...");
-            response.Name = model.Name;
-            response.CourseNumber = model.CourseNumber;
-            response.Duration = model.Duration;
-            response.Detail = model.Detail;
+            try
+            {
+                await _courseRepo.UpdateCourse(id, model);
+                if (await _courseRepo.SaveAllAsync()) return NoContent();
 
-            _context.Courses.Update(response);
-            await _context.SaveChangesAsync();
-            return Ok(response);
+                return StatusCode(500, "An error has occured when trying to update the course.");
+            }
+            //here we need to return soemthing, since not all code paths return a...
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
-            _courseRepo.DeleteCourse(id);   //why is there no need for async/ await?
+            await _courseRepo.DeleteCourse(id);   //why is there no need for async/ await?
 
             if (await _courseRepo.SaveAllAsync()) return NoContent();
 
@@ -145,8 +147,23 @@ namespace College_API.Controllers
             await _context.SaveChangesAsync();
             return StatusCode(201, course);
         }
+-----------------------------------------------------------
 
+[HttpPut("{id}")]   //THIS DOESN^T WORK 
+        public async Task<ActionResult<Course>> UpdateCourse(int id, Course model)
+        {
+            var response = await _context.Courses.FindAsync(id);
+            if (response is null) return NotFound($"CourseID: {id} not found...");
+            response.Name = model.Name;
+            response.CourseNumber = model.CourseNumber;
+            response.Duration = model.Duration;
+            response.Detail = model.Detail;
 
+            _context.Courses.Update(response);
+            await _context.SaveChangesAsync();
+            return Ok(response);
+        }
+----------------------------------------------------------
 [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCourse(int id)
         {
