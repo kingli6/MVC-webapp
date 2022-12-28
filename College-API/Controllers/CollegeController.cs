@@ -28,8 +28,7 @@ namespace College_API.Controllers
         //api/v1/course
         public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()//How do I make changes everywhere? VSCODE command...
         {
-            var response = await _courseRepo.ListAllCourseAsync();
-            var courseList = _mapper.Map<List<CourseViewModel>>(response);
+            var courseList = await _courseRepo.ListAllCourseAsync();
             return Ok(courseList);
         }
 
@@ -56,25 +55,20 @@ namespace College_API.Controllers
 
 
         [HttpPost()]
-        public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)
+        public async Task<ActionResult> AddCourse(PostCourseViewModel model)
         {
-            // var courseToAdd = new Course
-            // {
-            //     Name = course.Name,
-            //     CourseNumber = course.CourseNumber,
-            //     Duration = course.Duration,
-            //     Detail = course.Detail
-            // };
-            // from -> to
-            var courseToAdd = _mapper.Map<Course>(course);
-            await _context.Courses.AddAsync(courseToAdd);
 
-            await _context.SaveChangesAsync();
-            return StatusCode(201, courseToAdd);
+            if (await _courseRepo.GetCourseByCourseNumAsync(model.CourseNumber) is not null)
+                return BadRequest($"Course number {model.CourseNumber} already exists.");
+            await _courseRepo.AddCourseAsync(model);
+            if (await _courseRepo.SaveAllAsync())
+                return StatusCode(201);
+
+            return StatusCode(500, "Wasn't able save the course");
         }
 
 
-        [HttpPut("{id}")]   //THIS DOESN^T WORK
+        [HttpPut("{id}")]   //THIS DOESN^T WORK 
         public async Task<ActionResult<Course>> UpdateCourse(int id, Course model)
         {
             var response = await _context.Courses.FindAsync(id);
@@ -127,7 +121,15 @@ namespace College_API.Controllers
             }
             return Ok(courseList);
         }
-
+-----------------------------------------------
+    [HttpPost()]
+    public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)
+    {
+        var courseToAdd = _mapper.Map<Course>(course);
+        await _context.Courses.AddAsync(courseToAdd);
+        await _context.SaveChangesAsync();
+        return StatusCode(201, courseToAdd);
+    }
 
 [HttpPost()] //Adding automapper, so I removed this.
         public async Task<ActionResult<Course>> AddCourse(PostCourseViewModel course)

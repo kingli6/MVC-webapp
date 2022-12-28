@@ -19,9 +19,15 @@ namespace College_API.Repositories
             _mapper = mapper;
         }
 
-        public Task AddCourseAsync(Course model)
+        public async Task<List<CourseViewModel>> ListAllCourseAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Courses.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).ToListAsync();
+        }
+
+        public async Task AddCourseAsync(PostCourseViewModel model)
+        {
+            var courseToAdd = _mapper.Map<Course>(model);
+            await _context.Courses.AddAsync(courseToAdd);
         }
 
         public void DeleteCourse(int id) //why is there no need for async/ await?  A. Because Remove doesn't have a async in dbcontext...
@@ -39,19 +45,10 @@ namespace College_API.Repositories
         public async Task<CourseViewModel?> GetCourseByCourseNumAsync(int courseNumber)
         {
             return await _context.Courses.Where(c => c.CourseNumber == courseNumber)
-            .Select(course => new CourseViewModel
-            {
-                CourseId = course.Id,
-                CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
-                DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
-            }).SingleOrDefaultAsync();
+           .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
         }
 
-        public async Task<List<Course>> ListAllCourseAsync()
-        {
-            var response = await _context.Courses.ToListAsync();
-            return response;
-        }
+
 
         public async Task<bool> SaveAllAsync()
         {
@@ -73,6 +70,19 @@ namespace College_API.Repositories
 public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
         {
             return await _context.Courses.Where(c => c.Id == id)
+            .Select(course => new CourseViewModel
+            {
+                CourseId = course.Id,
+                CourseNameNumber = ($"{course.CourseNumber} {course.Name}"),
+                DurationDetail = string.Concat(course.Duration, "hrs ", course.Detail)
+            }).SingleOrDefaultAsync();
+        }
+
+
+// code without automapper Get by course number
+public async Task<CourseViewModel?> GetCourseByCourseNumAsync(int courseNumber)
+        {
+            return await _context.Courses.Where(c => c.CourseNumber == courseNumber)
             .Select(course => new CourseViewModel
             {
                 CourseId = course.Id,
