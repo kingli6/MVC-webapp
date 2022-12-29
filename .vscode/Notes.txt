@@ -123,15 +123,61 @@ GIT HELP
         public async Task<ActionResult<List<CourseViewModel>>> ListGetCourse()//How do I make changes everywhere? VSCODE command...
         {
             var response = await _courseRepo.ListAllCourseAsync();
-            var courseList = _mapper.Map<List<CourseViewModel>>(response);	//<---here. this is confusing. Teacher, Michael has written from CourseViewModel -> till response... But we are getting
+            var courseList = _mapper.Map<List<CourseViewModel>>(response);	//<---here. Q. this is confusing. Teacher, Michael has written from CourseViewModel -> till response... But we are getting
 			// the entire list through response, and we are converting it to ViewModel... So it should be the other way around...
-            return Ok(courseList);
+            return Ok(courseList);											// A. On 2:49:50 he says till and from. So I'm ccorrect.
         }	
 		2:46:45 Continuing with Repository pattern. We are moving the automapper to the repository class.
+		2:50:00 we used .ProjectTO (needed a using statement), and _mapper.ConfigurationProvider)
+			public async Task<CourseViewModel?> GetCourseByIdAsync(int id)
+			{
+				return await _context.Courses.Where(c => c.Id == id)
+				.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
+			}
+		Robins github https://github.com/robinskoogh
 		
-			
 220503 more database and other interface stuff..
+		05:00 Five step demo by MichealGustavsson on Security..??? Claims Roles
+		27:00 HATEOS //a standard way to confirm that your actions have been successful. and here is the object you created in the head...  
+		//	Your GET/POST methods, you don't want to return back an object everytime. Like for post method.
+						// There you can use HATEOS
+		32:00 Using [Required] in data model class, So incoming create object requests doesn't have ex null in CourseNumber...
+				if(!ModelState.isValid)... //in case of model number. this can be done in front end. 
+				if (!ModelState.IsValid) return StatusCode(500, "Invalid model. Model must have Course number");
+		35:28 A cooler way to catch error would be to set it in the required annotation. [Required(ErrorMessage = "Registreringsnummer is required)]
+		41:00 UpdateCourse PUT method. 
+				From repo class Michael chooses to use throw exception. 50:00 !!!Since we used try/catch in repo, we can use it again in the controller since we will recieve a exception if it fails!!
+		1:20:00  -dotnet --info 
+		1:25:00 building a Patch method
+		1:36:00 don't return (in catch (Exception ex)) return StatusCode(500, ex). !!Dont return ex. Instead ex.Message...?
+		
+		2:03:00 Fixing the database structure.  To remove repetitive.
+		2:09:00 Adding a new controller for the manufacturer table. Creating Get methods
+		2:13:00 he asks: How to go about to create 1:many conenction in entity framework
+				with public ICollection<Course> Courses {get; set;} = newList<Course>();
+			2:17:00 how to add ForeignKey
+		2:29:00	-dotnet ef migrations add "added make and vehcile relationship" -o "Data/Migrations"
+		2:34:30 -dotnet ef database drop --force // droping the table due to complication in adjusting connetion tables
+				-dotnet ef database update //updates the migration files. //sometimes this won't work
+		"There was a discussion on tables depending on eachother. Here We made manufacturers. coupled with Vehicles."
+			"You can't delete a item in the manufacturing table, if a vehicle is connected to it." "Man kan inte ha föräldarlösa barn." 
+			2:39:20//On delete: ReferentialAction. Cascade.. which means it will delete everything connected to the...
+			You can change it to SetNull or NoAction or Restrict
+		2:54:00	Michael Gustavsson is creating controller, Repo with Interface for Manufacturing table.
+			
+		
 220503 13.. more . Around 2:30:0 we start with security. he creates a security demo, which I'm not sure if its connected to the project
+		we start with building methods for the repo class.
+		09:00 for controller to get in repo class with its own context manupilation, we need dependency injection. 
+		builder.Services.AddScoped<IManufacturerRepository, ManufacturerRepository>(); //for the sake of getting a class that is instantiated.
+		17:00 fixing automapper for Manufacturer. There was a mistake.<!!>// hot reload doesn't work with program.cs or Automapper.  
+		26:00 creating AddVehicleAsync WITH manufacturer(connecting table) //manufacturers is the parent table.
+			var make = _context.Manufacturers.Include(c => c.Vehicles).Where(c => c.Name == model.Make).SingleOrDefualtAsync();
+
+
+
+
+
 
 
 //-----------------PROJECT MVC, Razor, React--------------------------------------------------------
